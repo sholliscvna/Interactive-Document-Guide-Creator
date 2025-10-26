@@ -14,6 +14,7 @@ interface EditorPanelProps {
   setEditingSectionId: (id: string | null) => void;
   hasImage: boolean;
   onStartMovePin: (id: string) => void;
+  onImageReplace: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface RichTextEditorProps {
@@ -132,6 +133,7 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
   setEditingSectionId,
   hasImage,
   onStartMovePin,
+  onImageReplace,
 }) => {
   const handleSectionChange = (field: keyof Section, value: any) => {
     if (editingSection) {
@@ -172,6 +174,26 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
                 file:bg-indigo-50 file:text-indigo-700
                 hover:file:bg-indigo-100"
             />
+            {hasImage && (
+              <>
+                <input
+                  type="file"
+                  id="imageReplaceUpload"
+                  accept="image/*"
+                  onChange={onImageReplace}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => document.getElementById('imageReplaceUpload')?.click()}
+                  className="mt-2 w-full bg-gray-100 text-gray-700 font-bold py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                  </svg>
+                  Replace Background Image
+                </button>
+              </>
+            )}
         </div>
       </div>
       <hr className="my-6" />

@@ -65,6 +65,22 @@ function App() {
     }
     e.target.value = ''; // Reset file input
   };
+  
+  const handleImageReplace = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setImage(event.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select a valid image file.");
+    }
+    e.target.value = ''; // Reset file input
+  };
 
   const startPinPlacement = () => {
     setIsPlacingPin(true);
@@ -146,12 +162,6 @@ function App() {
     <div className="flex flex-col h-screen font-sans">
       <header className="bg-white shadow-md p-4 flex justify-between items-center z-10">
         <div className="flex items-center gap-3">
-            <svg className="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 1-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 1 3.09-3.09L12 5.25l2.846.813a4.5 4.5 0 0 1 3.09 3.09L21.75 12l-2.846.813a4.5 4.5 0 0 1-3.09 3.09L12 18.75l-2.187-2.846Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18.244 2.25h3.516v3.516h-3.516V2.25Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.249 18.75h3.516v3.516H8.249v-3.516Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 2.25h3.516v3.516H2.25V2.25Z" />
-            </svg>
             <h1 className="text-2xl font-bold text-gray-800">Interactive Guide Creator</h1>
         </div>
         <button
@@ -179,6 +189,7 @@ function App() {
             setEditingSectionId={setEditingSectionId}
             hasImage={!!image}
             onStartMovePin={handleStartMovePin}
+            onImageReplace={handleImageReplace}
           />
         </div>
         <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-xl shadow-lg flex">
