@@ -25,10 +25,10 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
 }) => {
   return (
     <div className="w-full h-full grid grid-cols-1 md:grid-cols-3 bg-gray-100">
-      <div className="md:col-span-2 p-4 flex items-center justify-center bg-slate-200 h-full">
+      <div className="md:col-span-2 p-4 flex justify-center items-start bg-slate-200 h-full overflow-auto">
         {image ? (
           <div
-            className={`relative w-full max-w-full max-h-full aspect-auto ${isPlacingPin ? 'cursor-crosshair' : ''}`}
+            className={`relative w-full max-w-full aspect-auto ${isPlacingPin ? 'cursor-crosshair' : ''}`}
             onClick={onImageClick}
           >
             {statusMessage && (
@@ -36,7 +36,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                     <p className="text-white text-lg font-bold bg-black bg-opacity-70 px-4 py-2 rounded-lg">{statusMessage}</p>
                 </div>
             )}
-            <img src={image} alt="Guide" className="max-w-full max-h-full object-contain mx-auto shadow-lg" />
+            <img src={image} alt="Guide" className="max-w-full object-contain mx-auto shadow-lg" />
             {sections.map(section => (
               <button
                 key={section.id}
@@ -59,7 +59,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500">
+          <div className="text-center text-gray-500 m-auto">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>

@@ -79,9 +79,15 @@ function App() {
   };
   
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const imageWrapper = e.currentTarget;
+    const scrollableContainer = imageWrapper.parentElement;
+    if (!scrollableContainer) return;
+
+    const rect = imageWrapper.getBoundingClientRect();
+    
+    const x = ((e.clientX - rect.left + scrollableContainer.scrollLeft) / imageWrapper.offsetWidth) * 100;
+    const y = ((e.clientY - rect.top + scrollableContainer.scrollTop) / imageWrapper.offsetHeight) * 100;
+
 
     if (isPlacingPin) {
         const newSection: Section = {
@@ -159,7 +165,7 @@ function App() {
           Download HTML
         </button>
       </header>
-      <main className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 overflow-hidden">
+      <main className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 min-h-0">
         <div className="lg:col-span-4 xl:col-span-3 bg-white rounded-xl shadow-lg overflow-y-auto">
           <EditorPanel
             guideTitle={guideTitle}
@@ -175,7 +181,7 @@ function App() {
             onStartMovePin={handleStartMovePin}
           />
         </div>
-        <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-xl shadow-lg flex">
            <PreviewPanel
              image={image}
              sections={sections}
