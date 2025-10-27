@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { Section } from '../types';
 import { CATEGORIES } from '../constants';
@@ -31,9 +32,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   valueRef.current = value;
 
   // This effect synchronizes the editor's content with the `value` prop.
-  // It's crucial for loading initial data or when the selected section changes.
-  // The condition `editorRef.current.innerHTML !== value` prevents it from
-  // resetting the content (and cursor) while the user is typing.
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value;
@@ -69,9 +67,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
     if (!selection || selection.rangeCount === 0) return;
     const range = selection.getRangeAt(0);
 
+    if (range.collapsed) {
+        editorRef.current.focus();
+        alert("Please select the text you want to link.");
+        return;
+    }
+
     if (!editorRef.current.contains(range.commonAncestorContainer)) {
       editorRef.current.focus();
-      alert("Please select the text you want to link.");
+      alert("Please make sure your selection is inside the editor.");
       return;
     }
 
@@ -79,7 +83,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
     if (url) {
       selection.removeAllRanges();
       selection.addRange(range);
-      execCmd('createLink', url);
+      
+      // Using execCommand is more robust for selections spanning multiple elements
+      document.execCommand('createLink', false, url);
+      
+      // Find the link we just created and add target="_blank"
+      const link = range.startContainer.parentElement?.closest('a');
+      if (link) {
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+      }
+
+      handleInput(); // Sync state
     }
   };
 
@@ -97,16 +112,59 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
 
   return (
     <div className="border border-gray-300 rounded-md shadow-sm">
-      <div className="flex items-center p-2 bg-gray-50 border-b rounded-t-md gap-1">
-        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('bold'))} className="p-2 rounded hover:bg-gray-200 font-bold">B</button>
-        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('italic'))} className="p-2 rounded hover:bg-gray-200 italic">I</button>
-        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('underline'))} className="p-2 rounded hover:bg-gray-200 underline">U</button>
-        <button type="button" onMouseDown={(e) => handleToolbarClick(e, handleLink)} className="p-2 rounded hover:bg-gray-200">
+      <div className="flex items-center p-2 bg-gray-50 border-b rounded-t-md gap-2 flex-wrap">
+        <select
+          onChange={(e) => execCmd('formatBlock', e.target.value)}
+          onMouseDown={(e) => e.preventDefault()}
+          defaultValue="p"
+          title="Text Format"
+          className="text-sm p-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+          <option value="p">Normal Text</option>
+          <option value="h3">Large Heading</option>
+          <option value="h4">Medium Heading</option>
+          <option value="h5">Small Heading</option>
+        </select>
+        
+        <div className="relative w-8 h-8 flex items-center justify-center rounded hover:bg-gray-200" title="Text Color">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M6 3.5A1.5 1.5 0 017.5 2h5A1.5 1.5 0 0114 3.5v.25a.75.75 0 01-1.5 0V3.5h-1v5.25a.75.75 0 01-1.5 0V3.5h-1v5.25a.75.75 0 01-1.5 0V3.5h-1V3.75a.75.75 0 01-1.5 0v-.25A1.5 1.5 0 016 3.5zM3 12a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+          <input
+            type="color"
+            defaultValue="#000000"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            onInput={(e: React.ChangeEvent<HTMLInputElement>) => execCmd('foreColor', e.target.value)}
+          />
+        </div>
+
+        <div className="w-px h-5 bg-gray-300"></div>
+
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('bold'))} title="Bold" className="p-2 rounded hover:bg-gray-200 font-bold">B</button>
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('italic'))} title="Italic" className="p-2 rounded hover:bg-gray-200 italic">I</button>
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('underline'))} title="Underline" className="p-2 rounded hover:bg-gray-200 underline">U</button>
+        
+        <div className="w-px h-5 bg-gray-300"></div>
+        
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('insertUnorderedList'))} title="Bulleted List" className="p-2 rounded hover:bg-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5 7a2 2 0 11-4 0 2 2 0 014 0zM10.75 6.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zM5 13a2 2 0 11-4 0 2 2 0 014 0zM10.75 12.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" clipRule="evenodd" />
+          </svg>
+        </button>
+
+        <div className="w-px h-5 bg-gray-300"></div>
+
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, handleLink)} title="Insert Link" className="p-2 rounded hover:bg-gray-200">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" /></svg>
         </button>
         <input type="file" ref={imageInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
-        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => imageInputRef.current?.click())} className="p-2 rounded hover:bg-gray-200">
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => imageInputRef.current?.click())} title="Insert Image" className="p-2 rounded hover:bg-gray-200">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" /></svg>
+        </button>
+        <button type="button" onMouseDown={(e) => handleToolbarClick(e, () => execCmd('insertHorizontalRule'))} title="Insert Horizontal Line" className="p-2 rounded hover:bg-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
         </button>
       </div>
       <div
