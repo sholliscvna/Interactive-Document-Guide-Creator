@@ -54,7 +54,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
                   onPinClick(section.id);
                 }}
               >
-                  <span className="text-white text-xs font-bold">{sections.indexOf(section) + 1}</span>
+                  <div className="w-2 h-2 bg-white rounded-full opacity-75"></div>
               </button>
             ))}
           </div>
@@ -73,8 +73,7 @@ const PreviewPanel: React.FC<PreviewPanelProps> = ({
         {activeSection ? (
           <div className="animate-fade-in">
             <div className="flex items-center gap-3 pb-3 border-b-4 mb-4" style={{ borderColor: CATEGORIES[activeSection.categoryKey].color }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0" style={{ backgroundColor: CATEGORIES[activeSection.categoryKey].color }}>
-                    {sections.findIndex(s => s.id === activeSection.id) + 1}
+                <div className="w-8 h-8 rounded-full flex-shrink-0" style={{ backgroundColor: CATEGORIES[activeSection.categoryKey].color }}>
                 </div>
                 <h2 className="text-xl font-bold" style={{ color: CATEGORIES[activeSection.categoryKey].color }}>
                   {activeSection.title}

@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Section } from '../types';
 import { CATEGORIES } from '../constants';
@@ -274,6 +273,17 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
         {editingSection ? (
             <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                 <h3 className="font-bold text-gray-700">Editing Section</h3>
+                <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => onStartMovePin(editingSection.id)} className="w-full bg-blue-100 text-blue-800 font-bold py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors flex items-center justify-center gap-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                        Move Pin
+                    </button>
+                    <button onClick={handleDelete} className="w-full bg-red-100 text-red-800 font-bold py-2 px-3 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center gap-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                        Delete
+                    </button>
+                </div>
+                 <button onClick={() => setEditingSectionId(null)} className="w-full bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Done Editing</button>
                 <div>
                     <label htmlFor="sectionTitle" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                     <input type="text" id="sectionTitle" value={editingSection.title} onChange={(e) => handleSectionChange('title', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm"/>
@@ -290,17 +300,6 @@ const EditorPanel: React.FC<EditorPanelProps> = ({
                         ))}
                     </select>
                 </div>
-                <div className="grid grid-cols-2 gap-2 pt-2">
-                    <button onClick={() => onStartMovePin(editingSection.id)} className="w-full bg-blue-100 text-blue-800 font-bold py-2 px-3 rounded-lg hover:bg-blue-200 transition-colors flex items-center justify-center gap-2 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-                        Move Pin
-                    </button>
-                    <button onClick={handleDelete} className="w-full bg-red-100 text-red-800 font-bold py-2 px-3 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center gap-2 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-                        Delete
-                    </button>
-                </div>
-                <button onClick={() => setEditingSectionId(null)} className="w-full bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Done Editing</button>
             </div>
         ) : (
             <div className="flex-grow overflow-y-auto space-y-2 pr-2">

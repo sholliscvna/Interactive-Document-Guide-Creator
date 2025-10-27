@@ -81,6 +81,13 @@ export const generateHtmlForDownload = (title: string, image: string, sections: 
         .pin:hover { 
             transform: translate(-50%, -50%) scale(1.2); 
         }
+        .pin-inner-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: white;
+            border-radius: 9999px;
+            opacity: 0.75;
+        }
         .content-placeholder { 
             text-align: center; 
             color: #94a3b8; 
@@ -166,7 +173,11 @@ export const generateHtmlForDownload = (title: string, image: string, sections: 
                 pin.style.top = \`\${section.y}%\`;
                 pin.style.backgroundColor = categories[section.categoryKey].color;
                 pin.dataset.id = section.id;
-                pin.innerText = index + 1;
+                
+                const innerDot = document.createElement('div');
+                innerDot.className = 'pin-inner-dot';
+                pin.appendChild(innerDot);
+
                 pin.addEventListener('click', (e) => {
                     e.stopPropagation();
                     handlePinClick(section, pin, index + 1)
@@ -190,7 +201,7 @@ export const generateHtmlForDownload = (title: string, image: string, sections: 
 
             contentPanel.innerHTML = \`
                 <div class="header-bar" style="border-color: \${category.color};">
-                    <div class="header-icon" style="background-color: \${category.color};">\${index}</div>
+                    <div class="header-icon" style="background-color: \${category.color};"></div>
                     <h1 style="color: \${category.color};">\${escapedTitle}</h1>
                 </div>
                 <div class="content-html">\${section.content}</div>
